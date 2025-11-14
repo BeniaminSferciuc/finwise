@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "finwise2",
-    "slug": "finwise2",
+    "name": "finwise",
+    "slug": "finwise",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "finwise2",
+    "scheme": "finwise",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
