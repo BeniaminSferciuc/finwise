@@ -50,7 +50,8 @@ export default function SignUp() {
       }
 
       router.push("/sign-in");
-    } catch {
+    } catch (error) {
+      console.log(error);
       setErrorMessage(
         "Unable to sign up. Check your internet connection or try again later."
       );

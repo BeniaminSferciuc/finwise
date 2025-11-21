@@ -3,12 +3,14 @@ import { authClient } from "@/lib/auth-client";
 import {
   Outfit_400Regular,
   Outfit_500Medium,
+  Outfit_600SemiBold,
   Outfit_700Bold,
   useFonts,
 } from "@expo-google-fonts/outfit";
-import { Redirect, Slot, useSegments } from "expo-router";
-import { View } from "react-native";
+import { Redirect, Stack, useSegments } from "expo-router";
+
 import { setCustomText } from "react-native-global-props";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "../global.css";
 
@@ -18,6 +20,7 @@ export default function Layout() {
 
   const [fontsLoaded] = useFonts({
     Outfit_400Regular,
+    Outfit_600SemiBold,
     Outfit_500Medium,
     Outfit_700Bold,
   });
@@ -50,8 +53,18 @@ export default function Layout() {
   });
 
   return (
-    <View style={{ flex: 1, backgroundColor: "black" }}>
-      <Slot />
-    </View>
+    <SafeAreaProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="add-transaction"
+          options={{
+            presentation: "modal",
+            headerShown: false,
+            animation: "slide_from_bottom",
+          }}
+        />
+      </Stack>
+    </SafeAreaProvider>
   );
 }

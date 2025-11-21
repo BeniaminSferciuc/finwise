@@ -1,81 +1,150 @@
-import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { Sparkles } from "lucide-react-native";
+import {
+  ArrowUpRight,
+  Coffee,
+  PieChart,
+  ShoppingBag,
+  TrendingUp,
+} from "lucide-react-native";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StatusBar, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   return (
-    <View className="flex-1 bg-white">
-      <View
-        style={{ borderRadius: 1000 }}
-        className="absolute bg-indigo-200 rounded-full -top-20 -left-20 w-72 h-72 opacity-20"
-      />
-      <View
-        style={{ borderRadius: 1000 }}
-        className="absolute w-64 h-64 bg-indigo-100 rounded-full top-40 -right-28 opacity-30"
-      />
-      <View
-        style={{ borderRadius: 1000 }}
-        className="absolute w-40 h-40 bg-indigo-300 rounded-full -bottom-5 -left-10 opacity-20"
-      />
+    <View className="flex-1 bg-[#f5f7f2]">
+      <StatusBar barStyle="dark-content" />
 
-      <SafeAreaView edges={["bottom", "left", "right"]} className="flex-1 px-8">
-        {/* LOGO BUBBLE */}
-        <View className="items-start flex-1 mt-14">
-          <View className="p-4 bg-white border border-gray-200 shadow-lg rounded-2xl shadow-black/10">
-            <Sparkles size={38} color="#4338CA" />
+      {/* 1. ATMOSPHERIC BACKGROUND */}
+      {/* Gradient subtil pentru a nu fi alb plat */}
+      <View className="absolute top-0 left-0 right-0 h-full">
+        <View className="absolute top-[-10%] left-[-20%] w-[150%] h-[60%] bg-blue-100/50 rounded-full blur-[100px]" />
+        <View className="absolute bottom-[-10%] right-[-20%] w-[100%] h-[50%] bg-indigo-100/50 rounded-full blur-[80px]" />
+      </View>
+
+      <SafeAreaView className="justify-between flex-1">
+        {/* 2. HERO VISUAL - "BENTO GRID" LAYOUT */}
+        {/* Acesta simulează interfața aplicației plutind în spațiu */}
+        <View className="items-center justify-center flex-1 mt-10">
+          <View className="relative w-80 h-80">
+            {/* MAIN WIDGET (Expense Chart) */}
+            <View
+              className="absolute top-0 left-4 right-4 h-48 bg-white rounded-[32px] shadow-2xl shadow-indigo-200/60 p-5 flex justify-between z-20"
+              style={{ transform: [{ rotate: "-6deg" }] }}
+            >
+              <View className="flex-row items-center justify-between">
+                <View className="p-2 bg-orange-100 rounded-full">
+                  <PieChart size={20} color="#ea580c" />
+                </View>
+                <Text className="text-xs font-medium text-gray-400">
+                  This Month
+                </Text>
+              </View>
+
+              <View>
+                <Text className="text-3xl font-bold text-black">$1,240.50</Text>
+                <Text className="text-sm text-gray-500">Total Expenses</Text>
+              </View>
+
+              {/* Fake Bar Chart */}
+              <View className="flex-row items-end justify-between h-12 gap-2 mt-2">
+                <View className="w-8 bg-gray-100 rounded-t-md h-[40%]" />
+                <View className="w-8 bg-gray-100 rounded-t-md h-[60%]" />
+                <View className="w-8 bg-black rounded-t-md h-[85%]" />
+                <View className="w-8 bg-gray-100 rounded-t-md h-[50%]" />
+                <View className="w-8 bg-gray-100 rounded-t-md h-[30%]" />
+              </View>
+            </View>
+
+            {/* FLOATING BUBBLE 1 (Income) */}
+            <View
+              className="absolute z-30 flex-row items-center px-4 py-3 bg-white border shadow-xl -right-4 top-10 rounded-2xl shadow-green-100 border-green-50"
+              style={{ transform: [{ rotate: "12deg" }] }}
+            >
+              <View className="p-1 mr-2 bg-green-100 rounded-full">
+                <ArrowUpRight size={16} color="#16a34a" />
+              </View>
+              <View>
+                <Text className="text-xs font-bold text-gray-400">Salary</Text>
+                <Text className="text-sm font-bold text-green-600">
+                  +$3,200
+                </Text>
+              </View>
+            </View>
+
+            {/* FLOATING BUBBLE 2 (Expense - Coffee) */}
+            <View
+              className="absolute z-10 flex-row items-center px-4 py-3 bg-white shadow-xl -left-2 bottom-24 rounded-2xl shadow-gray-200"
+              style={{ transform: [{ rotate: "-15deg" }] }}
+            >
+              <View className="p-2 mr-2 bg-gray-100 rounded-full">
+                <Coffee size={18} color="#333" />
+              </View>
+              <Text className="font-bold text-black">-$5.50</Text>
+            </View>
+
+            {/* FLOATING BUBBLE 3 (Expense - Shopping) */}
+            <View
+              className="absolute z-30 flex-row items-center px-4 py-3 bg-white shadow-xl right-6 -bottom-2 rounded-2xl shadow-pink-100"
+              style={{ transform: [{ rotate: "4deg" }] }}
+            >
+              <View className="p-2 mr-2 bg-pink-100 rounded-full">
+                <ShoppingBag size={18} color="#db2777" />
+              </View>
+              <View>
+                <Text className="text-xs font-bold text-gray-400">Zara</Text>
+                <Text className="text-sm font-bold text-black">-$89.00</Text>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* HERO HEADLINE */}
-        <View className="justify-end flex-1 mb-20">
-          <Text className="text-[44px] text-black font-extrabold">
-            Take Control{"\n"}of Your
-          </Text>
+        {/* 3. TEXT & CTA */}
+        <View className="px-8 pb-10">
+          <View className="mb-10">
+            <View className="flex-row items-center mb-4">
+              <View className="px-3 py-1 bg-indigo-100 rounded-full">
+                <Text className="text-xs font-bold tracking-wider text-indigo-700 uppercase">
+                  Early Access
+                </Text>
+              </View>
+            </View>
+            <Text className="text-[42px] font-bold text-black leading-[1.1] tracking-tight">
+              Stop guessing
+              {"\n"}where your
+              <Text className="text-indigo-600"> money goes.</Text>
+            </Text>
+            <Text className="mt-4 text-lg font-medium leading-7 text-gray-500">
+              Track every expense, analyze spending habits, and take full
+              control of your financial health.
+            </Text>
+          </View>
 
-          <MaskedView
-            maskElement={
-              <Text className="text-[44px] font-extrabold -mt-2">
-                Financial Life
-              </Text>
-            }
+          <TouchableOpacity
+            onPress={() => router.push("/sign-in")}
+            activeOpacity={0.8}
+            className="w-full"
           >
             <LinearGradient
-              colors={["#4338CA", "#6366F1"]} // indigo-700 → indigo-500
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+              colors={["#111827", "#000000"]}
+              className="h-16 rounded-[20px] flex-row items-center justify-center shadow-lg shadow-black/20"
             >
-              <Text
-                className="text-[44px] font-extrabold"
-                style={{
-                  opacity: 0, // mask text hidden
-                }}
-              >
-                Financial Life
+              <Text className="mr-2 text-lg font-bold text-white">
+                Start Tracking
               </Text>
+              <TrendingUp size={20} color="white" />
             </LinearGradient>
-          </MaskedView>
+          </TouchableOpacity>
 
-          {/* SUBTITLE */}
-          <Text className="mt-4 text-[16px] leading-6 text-gray-600">
-            Manage expenses, monitor budgets,{"\n"}and make smarter money
-            choices.
-          </Text>
+          <View className="flex-row items-center justify-center gap-6 mt-6">
+            <Text className="text-sm font-medium text-gray-400">Simple</Text>
+            <View className="w-1 h-1 bg-gray-300 rounded-full" />
+            <Text className="text-sm font-medium text-gray-400">Secure</Text>
+            <View className="w-1 h-1 bg-gray-300 rounded-full" />
+            <Text className="text-sm font-medium text-gray-400">Smart</Text>
+          </View>
         </View>
-
-        {/* CTA BUTTON */}
-        <TouchableOpacity
-          onPress={() => router.push("/sign-in")}
-          activeOpacity={0.85}
-          className="items-center justify-center h-20 mb-10 overflow-hidden bg-indigo-700 rounded-full shadow-black/10"
-        >
-          <Text className="font-semibold text-center text-white">
-            Get Started
-          </Text>
-        </TouchableOpacity>
       </SafeAreaView>
     </View>
   );

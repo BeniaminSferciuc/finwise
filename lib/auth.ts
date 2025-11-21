@@ -16,5 +16,5 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
-  trustedOrigins: ["finwise://", "exp://172.20.10.3:8081"],
+  trustedOrigins: ["exp://172.20.10.2:8081", "finwise://"],
 });
