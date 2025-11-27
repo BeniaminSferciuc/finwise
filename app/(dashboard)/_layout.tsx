@@ -1,3 +1,4 @@
+import { THEME_COLOR } from "@/lib/constants";
 import { Tabs } from "expo-router";
 import { ArrowLeftRight, LayoutDashboard } from "lucide-react-native";
 import { Platform } from "react-native";
@@ -6,9 +7,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "orange",
+        tabBarActiveTintColor: THEME_COLOR,
         tabBarStyle: {
-          paddingBottom: Platform.OS === "ios" ? 25 : 10,
           paddingTop: 5,
           height: Platform.OS === "ios" ? 85 : 65,
         },
@@ -38,13 +38,6 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="add-transaction"
-        options={{
-          href: null,
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
         options={{
           href: null,
           headerShown: false,

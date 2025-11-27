@@ -7,6 +7,7 @@ import {
   Outfit_700Bold,
   useFonts,
 } from "@expo-google-fonts/outfit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Redirect, Stack, useSegments } from "expo-router";
 
 import { setCustomText } from "react-native-global-props";
@@ -17,6 +18,7 @@ import "../global.css";
 export default function Layout() {
   const { data: isAuthenticated, isPending } = authClient.useSession();
   const segments = useSegments() as string[];
+  const queryClient = new QueryClient();
 
   const [fontsLoaded] = useFonts({
     Outfit_400Regular,
@@ -53,20 +55,21 @@ export default function Layout() {
   });
 
   return (
-    <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(dashboard)" />
-
-        <Stack.Screen
-          name="add-transaction"
-          options={{
-            presentation: "modal",
-            animation: "slide_from_bottom",
-          }}
-        />
-
-        <Stack.Screen name="index" />
-      </Stack>
-    </SafeAreaProvider>
+    <QueryClientProvider client={queryClient}>
+      <SafeAreaProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(dashboard)" />
+          <Stack.Screen
+            name="add-transaction"
+            options={{
+              presentation: "modal",
+              animation: "slide_from_bottom",
+            }}
+          />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="settings" options={{ title: "Settings" }} />
+        </Stack>
+      </SafeAreaProvider>
+    </QueryClientProvider>
   );
 }

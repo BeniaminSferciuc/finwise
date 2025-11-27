@@ -1,3 +1,5 @@
+import { authClient } from "@/lib/auth-client";
+import { THEME_COLOR } from "@/lib/constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
@@ -86,6 +88,8 @@ const CATEGORY_STATS = [
 ];
 
 export default function HomeScreen() {
+  const { data: session } = authClient.useSession();
+
   return (
     // 1. Folosim un View simplu ca container principal pentru a permite poziționarea absolută corectă
     <View className="flex-1 bg-gray-50">
@@ -98,11 +102,8 @@ export default function HomeScreen() {
           {/* 1. HEADER */}
           <View className="flex-row items-center justify-between px-6 py-4">
             <View>
-              <Text className="text-sm font-semibold tracking-wider text-gray-400 uppercase">
-                Overview
-              </Text>
               <Text className="text-2xl font-bold tracking-tight text-black">
-                Hello, Beniamin 👋
+                Hello, {session?.user.name} 👋
               </Text>
             </View>
             <TouchableOpacity
@@ -423,8 +424,9 @@ export default function HomeScreen() {
       <TouchableOpacity
         onPress={() => router.push("/add-transaction")}
         activeOpacity={0.8}
-        className="absolute items-center justify-center bg-black rounded-full shadow-xl right-6 bottom-4 shadow-black/30"
+        className="absolute items-center justify-center rounded-full shadow-xl right-6 bottom-4 shadow-black/30"
         style={{
+          backgroundColor: THEME_COLOR,
           width: 64, // ~Aceeași înălțime cu tab-bar-ul custom
           height: 64,
           elevation: 8, // Umbră pentru Android

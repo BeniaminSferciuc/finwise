@@ -1,195 +1,186 @@
+import { FilterSheet } from "@/components/filters-sheet";
+import { renderItem } from "@/components/render-item";
+import { renderSectionHeader } from "@/components/render-section-header";
+import { MONTHS } from "@/constants";
+import { authClient } from "@/lib/auth-client";
+import { QUERYKEYS } from "@/lib/query-keys";
+import { supabase } from "@/lib/supabase";
+import { TransactionWithCategory } from "@/lib/types";
+import { getDateRange, groupTransactionsByDate } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+
+import { FilterIcon } from "lucide-react-native";
+import React, { useMemo, useState } from "react";
 import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  Briefcase,
-  Car,
-  Coffee,
-  DollarSign,
-  Dumbbell,
-  Home,
-  MoreHorizontal,
-  ShoppingBag,
-} from "lucide-react-native";
-import React from "react";
-import { SectionList, Text, TouchableOpacity, View } from "react-native";
+  ActivityIndicator,
+  SectionList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const TRANSACTIONS_DATA = [
-  {
-    title: "Today",
-    data: [
-      {
-        id: "1",
-        category: "Food",
-        description: "Starbucks Coffee",
-        amount: 5.5,
-        type: "expense",
-        icon: "coffee",
-      },
-      {
-        id: "2",
-        category: "Salary",
-        description: "Monthly Paycheck",
-        amount: 3200.0,
-        type: "income",
-        icon: "salary",
-      },
-    ],
-  },
-  {
-    title: "Yesterday",
-    data: [
-      {
-        id: "3",
-        category: "Transport",
-        description: "Uber Ride",
-        amount: 14.2,
-        type: "expense",
-        icon: "transport",
-      },
-      {
-        id: "4",
-        category: "Shopping",
-        description: "Zara - New Coat",
-        amount: 89.99,
-        type: "expense",
-        icon: "shopping",
-      },
-    ],
-  },
-  {
-    title: "November 15",
-    data: [
-      {
-        id: "5",
-        category: "Home",
-        description: "Internet Bill",
-        amount: 45.0,
-        type: "expense",
-        icon: "home",
-      },
-      {
-        id: "6",
-        category: "Health",
-        description: "Gym Membership",
-        amount: 30.0,
-        type: "expense",
-        icon: "health",
-      },
-    ],
-  },
-];
-
-// 2. Helper pentru Iconițe și Culori
-const getCategoryDetails = (category: string) => {
-  switch (category.toLowerCase()) {
-    case "food":
-      return { icon: Coffee, color: "bg-orange-100", iconColor: "#F97316" };
-    case "transport":
-      return { icon: Car, color: "bg-blue-100", iconColor: "#2563EB" };
-    case "shopping":
-      return { icon: ShoppingBag, color: "bg-pink-100", iconColor: "#DB2777" };
-    case "home":
-      return { icon: Home, color: "bg-purple-100", iconColor: "#9333EA" };
-    case "salary":
-      return { icon: DollarSign, color: "bg-green-100", iconColor: "#16A34A" };
-    case "health":
-      return { icon: Dumbbell, color: "bg-red-100", iconColor: "#DC2626" };
-    default:
-      return { icon: Briefcase, color: "bg-gray-100", iconColor: "#4B5563" };
-  }
-};
+type FilterType = "all" | "income" | "expense";
 
 const Transactions = () => {
-  const renderItem = ({ item, index, section }: any) => {
-    const {
-      icon: IconComponent,
-      color,
-      iconColor,
-    } = getCategoryDetails(item.category);
+  const { data: session } = authClient.useSession();
+  const currentYear = new Date().getFullYear();
 
-    // Logică pentru colțuri rotunjite (Apple Style Grouped List)
-    const isFirst = index === 0;
-    const isLast = index === section.data.length - 1;
-    const radiusStyle = `
-      ${isFirst ? "rounded-t-[28px]" : ""} 
-      ${isLast ? "rounded-b-[28px]" : ""}
-    `;
+  // --- STATE ---
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-    return (
-      <TouchableOpacity
-        activeOpacity={0.7}
-        className={`bg-white px-4 py-3.5 flex-row items-center ${radiusStyle} ${
-          !isLast ? "border-b border-gray-100" : ""
-        }`}
-      >
-        {/* ICON */}
-        <View
-          className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${color}`}
-        >
-          <IconComponent size={18} color={iconColor} strokeWidth={1.75} />
-        </View>
+  // Stare Activă (ce se vede in lista)
+  const [activeYear, setActiveYear] = useState(currentYear);
+  const [activeMonth, setActiveMonth] = useState<number | null>(null);
+  const [activeType, setActiveType] = useState<FilterType>("all");
 
-        {/* DETAILS */}
-        <View className="flex-1">
-          <Text className="text-[14px] font-semibold text-black">
-            {item.category}
-          </Text>
-          <Text className="text-[12px] text-gray-500" numberOfLines={1}>
-            {item.description}
-          </Text>
-        </View>
+  // Stare Temporară (ce modifici in modal inainte de Apply)
+  const [tempYear, setTempYear] = useState(currentYear);
+  const [tempMonth, setTempMonth] = useState<number | null>(null);
+  const [tempType, setTempType] = useState<FilterType>("all");
 
-        {/* AMOUNT */}
-        <View className="items-end">
-          <Text
-            className={`text-base font-bold ${
-              item.type === "income" ? "text-green-600" : "text-black"
-            }`}
-          >
-            {item.type === "income" ? "+" : "-"}${item.amount.toFixed(2)}
-          </Text>
-          {/* Mic indicator de tip */}
-          {item.type === "income" ? (
-            <ArrowDownLeft size={12} color="#16a34a" className="mt-0.5" />
-          ) : (
-            <ArrowUpRight size={12} color="#6b7280" className="mt-0.5" />
-          )}
-        </View>
-      </TouchableOpacity>
-    );
+  // Deschide modalul și sincronizează starea temporară cu cea activă
+  const openFilters = () => {
+    setTempYear(activeYear);
+    setTempMonth(activeMonth);
+    setTempType(activeType);
+    setIsFilterVisible(true);
   };
 
-  // Render Section Header (Data)
-  const renderSectionHeader = ({ section: { title } }: any) => (
-    <View className="mt-4 mb-1">
-      <Text className="text-lg font-bold tracking-wide text-neutral-500">
-        {title}
-      </Text>
-    </View>
-  );
+  // Aplică filtrele
+  const applyFilters = () => {
+    setActiveYear(tempYear);
+    setActiveMonth(tempMonth);
+    setActiveType(tempType);
+    setIsFilterVisible(false);
+  };
+
+  // --- QUERIES ---
+  const { data: availableYears = [currentYear] } = useQuery({
+    queryKey: ["available-years", session?.user.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("transactions")
+        .select("date")
+        .order("date", { ascending: false });
+      const uniqueYears = new Set<number>([currentYear]);
+      data?.forEach((tx) => uniqueYears.add(new Date(tx.date).getFullYear()));
+      return Array.from(uniqueYears).sort((a, b) => b - a);
+    },
+    enabled: !!session?.user.id,
+  });
+
+  const {
+    data: rawTransactions,
+    isPending,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: [QUERYKEYS.TRANSACTIONS, activeYear, activeMonth, activeType],
+    queryFn: async () => {
+      const { start, end } = getDateRange(activeYear, activeMonth);
+      let query = supabase
+        .from("transactions")
+        .select("*, categories(*)")
+        .order("date", { ascending: false })
+        .gte("date", start)
+        .lte("date", end);
+
+      if (activeType !== "all") query = query.eq("type", activeType);
+
+      const { data, error } = await query.throwOnError();
+      if (error) throw error;
+      return data as unknown as TransactionWithCategory[];
+    },
+    enabled: !!session?.user.id,
+  });
+
+  const sections = useMemo(() => {
+    if (!rawTransactions) return [];
+    return groupTransactionsByDate(rawTransactions);
+  }, [rawTransactions]);
+
+  // Verificăm dacă sunt filtre active pentru a colora butonul
+  const hasActiveFilters =
+    activeMonth !== null || activeType !== "all" || activeYear !== currentYear;
 
   return (
-    <SafeAreaView className="flex-1 mt-8 bg-gray-100" edges={["top"]}>
-      {/* HEADER ECRAN */}
-      <View className="flex-row items-center justify-between px-5 pb-3 bg-gray-100">
-        <Text className="text-3xl font-bold tracking-tight text-black">
-          Transactions
-        </Text>
-        <TouchableOpacity className="items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
-          <MoreHorizontal size={20} color="black" />
-        </TouchableOpacity>
+    <SafeAreaView className="flex-1 bg-[#F2F2F7]" edges={["top"]}>
+      {/* HEADER */}
+      <View className="px-5 pt-4 pb-4">
+        <View>
+          <Text className="text-2xl font-bold tracking-tight text-black">
+            Transactions
+          </Text>
+          <Text className="text-sm font-medium text-gray-500">
+            {activeYear} •{" "}
+            {activeMonth !== null ? MONTHS[activeMonth] : "All Year"}
+          </Text>
+        </View>
       </View>
 
-      {/* LISTA TRANZACȚII */}
-      <SectionList
-        sections={TRANSACTIONS_DATA}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        renderSectionHeader={renderSectionHeader}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
-        showsVerticalScrollIndicator={true}
-        stickySectionHeadersEnabled={false}
+      {/* CONTENT */}
+      {isPending ? (
+        <View className="items-center justify-center flex-1">
+          <ActivityIndicator size="small" color="#000" />
+        </View>
+      ) : isError ? (
+        <View className="items-center justify-center flex-1 px-6">
+          <Text className="mb-4 text-red-500">Error loading transactions.</Text>
+          <TouchableOpacity
+            onPress={() => refetch()}
+            className="px-6 py-2 bg-black rounded-full"
+          >
+            <Text className="font-bold text-white">Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : sections.length === 0 ? (
+        <View className="items-center justify-center flex-1 mt-10">
+          <Text className="text-lg font-medium text-gray-400">
+            No transactions found
+          </Text>
+          <Text className="text-sm text-gray-300">
+            Try changing the filters
+          </Text>
+        </View>
+      ) : (
+        <SectionList
+          sections={sections}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          renderSectionHeader={renderSectionHeader}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
+          showsVerticalScrollIndicator={true}
+          stickySectionHeadersEnabled={false}
+        />
+      )}
+      <TouchableOpacity
+        onPress={openFilters}
+        className={`size-16  rounded-full items-center justify-center absolute right-4 bottom-4 border ${
+          hasActiveFilters
+            ? "bg-black border-black"
+            : "bg-white border-gray-200"
+        }`}
+      >
+        <FilterIcon
+          size={20}
+          color={hasActiveFilters ? "white" : "black"}
+          fill={hasActiveFilters ? "white" : "none"}
+        />
+      </TouchableOpacity>
+
+      {/* FILTER BOTTOM SHEET */}
+      <FilterSheet
+        visible={isFilterVisible}
+        onClose={() => setIsFilterVisible(false)}
+        availableYears={availableYears}
+        selectedYear={tempYear}
+        setSelectedYear={setTempYear}
+        selectedMonth={tempMonth}
+        setSelectedMonth={setTempMonth}
+        selectedType={tempType}
+        setSelectedType={setTempType}
+        onApply={applyFilters}
       />
     </SafeAreaView>
   );
