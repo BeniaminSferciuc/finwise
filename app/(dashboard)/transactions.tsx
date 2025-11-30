@@ -1,7 +1,11 @@
 import { FilterSheet } from "@/components/filters-sheet";
-import { createRenderItem } from "@/components/render-item";
+import { LoadingState } from "@/components/loading";
+import { TransactionItem } from "@/components/render-item";
 
 import { renderSectionHeader } from "@/components/render-section-header";
+import { EmptyState } from "@/components/transactions/empty-state";
+import { ErrorState } from "@/components/transactions/error-state";
+import { TransactionsHeader } from "@/components/transactions/transactions-header";
 import { useAvailableYears } from "@/hooks/use-available-years";
 import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { useListTransactions } from "@/hooks/use-list-transactions";
@@ -12,13 +16,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { FilterIcon } from "lucide-react-native";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  SectionList,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, SectionList, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Transactions = () => {
@@ -34,7 +32,6 @@ const Transactions = () => {
   const [tempYear, setTempYear] = useState(currentYear);
   const [tempType, setTempType] = useState<FilterType>("all");
 
-  // Aplică filtrele
   const applyFilters = () => {
     setActiveYear(tempYear);
     setActiveType(tempType);
@@ -51,13 +48,19 @@ const Transactions = () => {
 
   const deleteMutation = useDeleteTransaction();
 
-  const renderItem = useMemo(
-    () =>
-      createRenderItem({
-        showDate: true,
-        onDelete: (id) => deleteMutation.mutate(id),
-        deletingId: deleteMutation.isPending ? deleteMutation.variables : null,
-      }),
+  const renderItem = useCallback(
+    ({ item, index, section }: any) => (
+      <TransactionItem
+        item={item}
+        index={index}
+        section={section}
+        showDate={true}
+        onDelete={(id) => deleteMutation.mutate(id)}
+        deletingId={
+          deleteMutation.isPending ? (deleteMutation.variables as string) : null
+        }
+      />
+    ),
     [deleteMutation]
   );
 
@@ -85,42 +88,13 @@ const Transactions = () => {
       edges={["top"]}
       style={{ backgroundColor: THEME_BACKGROUND }}
     >
-      {/* HEADER */}
-      <View className="px-5 py-3 border-b border-b-neutral-200">
-        <View>
-          <Text className="text-2xl font-bold tracking-tight text-black">
-            Transactions
-          </Text>
-          <Text className="text-sm font-medium text-gray-500">
-            {activeYear}
-          </Text>
-        </View>
-      </View>
-
-      {/* CONTENT */}
+      <TransactionsHeader activeYear={activeYear} />
       {isPending ? (
-        <View className="items-center justify-center flex-1">
-          <ActivityIndicator size="small" color={THEME_COLOR} />
-        </View>
+        <LoadingState />
       ) : isError ? (
-        <View className="items-center justify-center flex-1 px-6">
-          <Text className="mb-4 text-red-500">Error loading transactions.</Text>
-          <TouchableOpacity
-            onPress={() => refetch()}
-            className="px-6 py-2 bg-black rounded-full"
-          >
-            <Text className="font-bold text-white">Retry</Text>
-          </TouchableOpacity>
-        </View>
+        <ErrorState refetch={refetch} />
       ) : sections.length === 0 ? (
-        <View className="items-center justify-center flex-1 mt-10">
-          <Text className="text-lg font-medium text-gray-400">
-            No transactions found
-          </Text>
-          <Text className="text-sm text-gray-300">
-            Try changing the filters
-          </Text>
-        </View>
+        <EmptyState />
       ) : (
         <SectionList
           sections={sections}
@@ -134,9 +108,9 @@ const Transactions = () => {
           style={{ paddingTop: 12 }}
         />
       )}
-      <TouchableOpacity
+      <Pressable
         onPress={handlePresentModalPress}
-        className="size-16 rounded-full items-center justify-center absolute right-6 bottom-4 border"
+        className="absolute items-center justify-center border rounded-full size-16 right-6 bottom-4"
         style={{
           backgroundColor: hasActiveFilters ? THEME_COLOR : "white",
           borderColor: hasActiveFilters ? THEME_COLOR : "#E5E5EA",
@@ -147,7 +121,7 @@ const Transactions = () => {
           color={hasActiveFilters ? "white" : THEME_COLOR}
           fill={hasActiveFilters ? "white" : "none"}
         />
-      </TouchableOpacity>
+      </Pressable>
 
       <FilterSheet
         availableYears={availableYears}

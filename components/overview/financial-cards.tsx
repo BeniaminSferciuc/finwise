@@ -1,5 +1,3 @@
-import { THEME_COLOR } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   ArrowDownRight,
@@ -7,8 +5,10 @@ import {
   PieChart,
   TrendingUp,
 } from "lucide-react-native";
-import React from "react";
 import { Dimensions, ScrollView, Text, View } from "react-native";
+
+import { THEME_COLOR } from "@/lib/constants";
+import { formatCurrency } from "@/lib/utils";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width - 48;
@@ -73,7 +73,7 @@ export const FinancialCards = ({ stats }: Props) => {
               </View>
               <Text className="text-xs text-gray-400">Income</Text>
             </View>
-            <Text className="text-lg font-semibold text-white">
+            <Text className="font-semibold text-white">
               {formatCurrency(stats.income)}
             </Text>
           </View>
@@ -85,7 +85,7 @@ export const FinancialCards = ({ stats }: Props) => {
               </View>
               <Text className="text-xs text-gray-400">Expenses</Text>
             </View>
-            <Text className="text-lg font-semibold text-white">
+            <Text className="font-semibold text-white">
               {formatCurrency(stats.expense)}
             </Text>
           </View>
@@ -123,7 +123,7 @@ export const FinancialCards = ({ stats }: Props) => {
 
         <View className="w-full h-2 overflow-hidden rounded-full bg-white/10">
           <View
-            className="bg-white h-full rounded-full"
+            className="h-full bg-white rounded-full"
             style={{
               width: `${stats.income > 0 ? Math.max(0, Math.min(100, ((stats.income - stats.expense) / stats.income) * 100)) : 0}%`,
             }}

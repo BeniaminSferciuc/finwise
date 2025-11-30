@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth-client";
-import { THEME_COLOR } from "@/lib/constants";
+import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Link, router } from "expo-router";
 import { AlertOctagon, Eye, EyeOff, Lock, Mail } from "lucide-react-native";
@@ -53,7 +53,10 @@ export default function SignIn() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f5f7] p-4">
+    <SafeAreaView
+      className="flex-1 p-4"
+      style={{ backgroundColor: THEME_BACKGROUND }}
+    >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}

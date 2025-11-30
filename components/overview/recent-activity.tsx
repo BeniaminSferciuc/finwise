@@ -1,9 +1,10 @@
 import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { TransactionWithCategory } from "@/lib/types";
 import { router } from "expo-router";
-import React, { useMemo } from "react";
+import React, { useCallback } from "react";
 import { Pressable, SectionList, Text, View } from "react-native";
-import { createRenderItem } from "../render-item";
+// 1. Importăm componenta directă, nu funcția factory
+import { TransactionItem } from "../render-item";
 
 type Props = {
   isLoading: boolean;
@@ -13,13 +14,19 @@ type Props = {
 export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
   const deleteMutation = useDeleteTransaction();
 
-  const renderItem = useMemo(
-    () =>
-      createRenderItem({
-        showDate: true,
-        onDelete: (id) => deleteMutation.mutate(id),
-        deletingId: deleteMutation.isPending ? deleteMutation.variables : null,
-      }),
+  const renderItem = useCallback(
+    ({ item, index, section }: any) => (
+      <TransactionItem
+        item={item}
+        index={index}
+        section={section}
+        showDate={true}
+        onDelete={(id) => deleteMutation.mutate(id)}
+        deletingId={
+          deleteMutation.isPending ? (deleteMutation.variables as string) : null
+        }
+      />
+    ),
     [deleteMutation]
   );
 
@@ -40,7 +47,7 @@ export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
         ) : (
           <SectionList
             keyExtractor={(item) => item.id}
-            sections={[{ data: recentActivity }]}
+            sections={[{ title: "Recent", data: recentActivity }]}
             renderItem={renderItem}
             scrollEnabled={false}
             showsVerticalScrollIndicator={true}

@@ -1,4 +1,4 @@
-import { LoadingScreen } from "@/components/loading";
+import { LoadingState } from "@/components/loading";
 import { authClient } from "@/lib/auth-client";
 import {
   Outfit_400Regular,
@@ -29,7 +29,7 @@ export default function Layout() {
     Outfit_700Bold,
   });
 
-  if (isPending) return <LoadingScreen />;
+  if (isPending) return <LoadingState />;
 
   const inDashboardGroup = segments[0] === "(dashboard)";
   const inAuthGroup = segments[0] === "(auth)";
@@ -46,7 +46,7 @@ export default function Layout() {
   }
 
   if (!fontsLoaded) {
-    return <LoadingScreen />;
+    return <LoadingState />;
   }
 
   setCustomText({

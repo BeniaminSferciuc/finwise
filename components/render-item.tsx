@@ -1,13 +1,7 @@
 import { getCategoryDetails } from "@/lib/get-category-details";
 import { TransactionSection, TransactionWithCategory } from "@/lib/types";
 import { Trash } from "lucide-react-native";
-import {
-  ActivityIndicator,
-  SectionListRenderItemInfo,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import Reanimated, {
   Extrapolation,
@@ -16,12 +10,7 @@ import Reanimated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-type RenderOptions = {
-  showDate?: boolean;
-  onDelete?: (id: string) => void;
-  deletingId?: string | null;
-};
-
+// RightAction rămâne neschimbat, este corect definit
 const RightAction = ({
   drag,
   onPress,
@@ -69,117 +58,114 @@ const RightAction = ({
   );
 };
 
-export const createRenderItem = ({
+// --- MODIFICAREA PRINCIPALĂ AICI ---
+// Definim tipurile pentru props-urile componentei
+interface TransactionItemProps {
+  item: TransactionWithCategory;
+  index: number;
+  section: TransactionSection;
+  showDate?: boolean;
+  onDelete?: (id: string) => void;
+  deletingId?: string | null;
+}
+
+export const TransactionItem = ({
+  item,
+  index,
+  section,
   showDate,
   onDelete,
   deletingId,
-}: RenderOptions = {}) => {
-  const RenderItem = ({
-    item,
-    index,
-    section,
-  }: SectionListRenderItemInfo<
-    TransactionWithCategory,
-    TransactionSection
-  >) => {
-    const categoryName = item.categories?.name || "Uncategorized";
-    const {
-      icon: IconComponent,
-      background,
-      iconColor,
-    } = getCategoryDetails(categoryName);
+}: TransactionItemProps) => {
+  const categoryName = item.categories?.name || "Uncategorized";
+  const {
+    icon: IconComponent,
+    background,
+    iconColor,
+  } = getCategoryDetails(categoryName);
 
-    const formattedDate =
-      showDate && item.date
-        ? new Date(item.date).toLocaleDateString("ro-RO", {
-            day: "2-digit",
-            month: "short",
-          })
-        : null;
+  const formattedDate =
+    showDate && item.date
+      ? new Date(item.date).toLocaleDateString("ro-RO", {
+          day: "2-digit",
+          month: "short",
+        })
+      : null;
 
-    const isFirst = index === 0;
-    const isLast = index === section.data.length - 1;
+  const isFirst = index === 0;
+  const isLast = index === section.data.length - 1;
+  const isThisItemDeleting = deletingId === item.id;
+  const containerClass = `bg-white px-4 py-4 gap-3 flex-row items-center`;
 
-    // Verificăm dacă ACEST item este cel care se șterge
-    const isThisItemDeleting = deletingId === item.id;
-
-    const containerClass = `bg-white px-4 py-4 gap-3 flex-row items-center`;
-
-    return (
-      <Swipeable
-        friction={2}
-        enableTrackpadTwoFingerGesture
-        rightThreshold={40}
-        // Dacă acest item se șterge, prevenim închiderea swipe-ului pentru a vedea spinner-ul
-        overshootRight={false}
-        containerStyle={{
-          marginBottom: isLast ? 16 : 0,
-          backgroundColor: "transparent",
+  return (
+    <Swipeable
+      friction={2}
+      enableTrackpadTwoFingerGesture
+      rightThreshold={40}
+      overshootRight={false}
+      containerStyle={{
+        backgroundColor: "transparent",
+      }}
+      renderRightActions={(_progress, drag) => (
+        <RightAction
+          drag={drag}
+          onPress={() => onDelete?.(item.id)}
+          isFirst={isFirst}
+          isLast={isLast}
+          isLoading={isThisItemDeleting}
+        />
+      )}
+    >
+      <TouchableOpacity
+        activeOpacity={0.7}
+        className={containerClass}
+        style={{
+          borderTopStartRadius: isFirst ? 30 : 0,
+          borderTopEndRadius: isFirst ? 30 : 0,
+          borderBottomStartRadius: isLast ? 30 : 0,
+          borderBottomEndRadius: isLast ? 30 : 0,
+          borderBottomWidth: isLast ? 0 : 1,
+          borderBottomColor: "#f3f4f6",
         }}
-        renderRightActions={(progress, drag) => (
-          <RightAction
-            drag={drag}
-            onPress={() => onDelete?.(item.id)}
-            isFirst={isFirst}
-            isLast={isLast}
-            isLoading={isThisItemDeleting}
-          />
-        )}
       >
-        <TouchableOpacity
-          activeOpacity={0.7}
-          className={containerClass}
-          style={{
-            borderTopStartRadius: isFirst ? 30 : 0,
-            borderTopEndRadius: isFirst ? 30 : 0,
-            borderBottomStartRadius: isLast ? 30 : 0,
-            borderBottomEndRadius: isLast ? 30 : 0,
-            borderBottomWidth: isLast ? 0 : 1,
-            borderBottomColor: "#f3f4f6",
-          }}
+        <View
+          className={`size-11 rounded-full items-center justify-center ${background}`}
+          style={{ backgroundColor: background, borderRadius: 100 }}
         >
-          <View
-            className={`size-11 rounded-full items-center justify-center ${background}`}
-            style={{ backgroundColor: background, borderRadius: 100 }}
+          <IconComponent size={18} color={iconColor} strokeWidth={2} />
+        </View>
+
+        <View className="flex-1">
+          <Text className="text-[15px] font-semibold text-gray-900 capitalize">
+            {categoryName}
+          </Text>
+          {item.description ? (
+            <Text className="text-xs text-gray-400 mt-0.5" numberOfLines={1}>
+              {item.description}
+            </Text>
+          ) : null}
+          {formattedDate && (
+            <Text className="text-[10px] text-gray-400 mt-0.5">
+              {formattedDate}
+            </Text>
+          )}
+        </View>
+
+        <View className="items-end">
+          <Text
+            className={`text-[15px] font-bold ${
+              item.type === "income" ? "text-emerald-500" : "text-red-500"
+            }`}
+            style={{
+              color: item.type === "income" ? "#10b981" : "#ef4444",
+            }}
           >
-            <IconComponent size={18} color={iconColor} strokeWidth={2} />
-          </View>
-
-          <View className="flex-1">
-            <Text className="text-[15px] font-semibold text-gray-900 capitalize">
-              {categoryName}
-            </Text>
-            {item.description ? (
-              <Text className="text-xs text-gray-400 mt-0.5" numberOfLines={1}>
-                {item.description}
-              </Text>
-            ) : null}
-            {formattedDate && (
-              <Text className="text-[10px] text-gray-400 mt-0.5">
-                {formattedDate}
-              </Text>
-            )}
-          </View>
-
-          <View className="items-end">
-            <Text
-              className={`text-[15px] font-bold ${
-                item.type === "income" ? "text-emerald-500" : "text-red-500"
-              }`}
-              style={{
-                color: item.type === "income" ? "#10b981" : "#ef4444",
-              }}
-            >
-              {item.type === "income" ? "+" : "-"}
-              {Math.abs(item.amount).toFixed(2)}
-              <Text className="text-xs font-normal"> lei</Text>
-            </Text>
-          </View>
-        </TouchableOpacity>
-      </Swipeable>
-    );
-  };
-
-  RenderItem.displayName = "RenderItem";
-  return RenderItem;
+            {item.type === "income" ? "+" : "-"}
+            {Math.abs(item.amount).toFixed(2)}
+            <Text className="text-xs font-normal"> lei</Text>
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </Swipeable>
+  );
 };

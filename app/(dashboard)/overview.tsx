@@ -1,49 +1,22 @@
+import { router } from "expo-router";
+import { Plus } from "lucide-react-native";
+import { useMemo } from "react";
+import { Pressable, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { ActionButtons } from "@/components/overview/action-buttons";
 import { CategoryBreakdown } from "@/components/overview/category-breakdown";
 import { FinancialCards } from "@/components/overview/financial-cards";
 import { Header } from "@/components/overview/header";
 import { RecentActivity } from "@/components/overview/recent-activity";
 import { SpendingBreakdown } from "@/components/overview/spending-breakdown";
-import { authClient } from "@/lib/auth-client";
+
+import { useOverviewTransactions } from "@/hooks/use-overview-transactions";
 import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
-import { QUERYKEYS } from "@/lib/query-keys";
-import { supabase } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
-import { router } from "expo-router";
-import { Plus } from "lucide-react-native";
-import React, { useMemo } from "react";
-import { Pressable, ScrollView, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
-  const { data: session } = authClient.useSession();
+  const { data: transactions, isLoading } = useOverviewTransactions();
 
-  // --- 1. QUERY TRANSACTIONS FOR CURRENT YEAR ---
-  const { data: transactions, isLoading } = useQuery({
-    queryKey: [QUERYKEYS.OVERVIEW_TRANSACTIONS, session?.user.id],
-    queryFn: async () => {
-      if (!session?.user.id) return [];
-
-      const currentYear = new Date().getFullYear();
-      const startOfYear = `${currentYear}-01-01`;
-      const endOfYear = `${currentYear}-12-31`;
-
-      const { data, error } = await supabase
-        .from("transactions")
-        .select("*, categories(*)") // Join with categories
-        .eq("user_id", session.user.id)
-        .gte("date", startOfYear)
-        .lte("date", endOfYear)
-        .order("date", { ascending: false })
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!session?.user.id,
-  });
-
-  // --- 2. CALCULATE TOTALS ---
   const stats = useMemo(() => {
     if (!transactions) return { income: 0, expense: 0, netWorth: 0 };
 

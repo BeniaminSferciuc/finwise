@@ -65,9 +65,10 @@ const Settings = () => {
       <View className="flex-row items-center px-5 pt-4">
         <Pressable
           onPress={() => router.back()}
-          className="absolute left-5 top-6"
+          className="absolute z-50 left-5 top-6"
+          hitSlop={20}
         >
-          <View className="items-center justify-center p-2 bg-white rounded-full size-12 border border-neutral-200/75">
+          <View className="items-center justify-center p-2 bg-white border rounded-full size-12 border-neutral-200/75">
             <ChevronLeft size={28} style={{ marginLeft: -2 }} />
           </View>
         </Pressable>

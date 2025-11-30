@@ -14,7 +14,7 @@ export const Header = () => {
           Hello, {session?.user.name} 👋
         </Text>
       </View>
-      <Pressable onPress={() => router.push("/settings")}>
+      <Pressable onPress={() => router.push("/settings")} hitSlop={20}>
         <Settings color="gray" />
       </Pressable>
     </View>
