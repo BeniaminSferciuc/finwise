@@ -1,14 +1,13 @@
 import { FilterSheet } from "@/components/filters-sheet";
-import { renderItem } from "@/components/render-item";
+import { createRenderItem } from "@/components/render-item";
+
 import { renderSectionHeader } from "@/components/render-section-header";
-import { authClient } from "@/lib/auth-client";
-import { THEME_COLOR } from "@/lib/constants";
-import { QUERYKEYS } from "@/lib/query-keys";
-import { supabase } from "@/lib/supabase";
-import { TransactionWithCategory } from "@/lib/types";
-import { getDateRange, groupTransactionsByDate } from "@/lib/utils";
+import { useAvailableYears } from "@/hooks/use-available-years";
+import { useListTransactions } from "@/hooks/use-list-transactions";
+import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
+import { FilterType } from "@/lib/types";
+import { groupTransactionsByDate } from "@/lib/utils";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { useQuery } from "@tanstack/react-query";
 
 import { FilterIcon } from "lucide-react-native";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -21,12 +20,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type FilterType = "all" | "income" | "expense";
-
 const Transactions = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const { data: session } = authClient.useSession();
   const currentYear = new Date().getFullYear();
 
   // Stare Activă (ce se vede in lista)
@@ -50,46 +46,16 @@ const Transactions = () => {
     bottomSheetModalRef.current?.present();
   }, [activeType, activeYear]);
 
-  // --- QUERIES ---
-  const { data: availableYears = [currentYear] } = useQuery({
-    queryKey: ["available-years", session?.user.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("transactions")
-        .select("date")
-        .eq("user_id", session?.user.id ?? "")
-        .order("date", { ascending: false });
-      const uniqueYears = new Set<number>([currentYear]);
-      data?.forEach((tx) => uniqueYears.add(new Date(tx.date).getFullYear()));
-      return Array.from(uniqueYears).sort((a, b) => b - a);
-    },
-    enabled: !!session?.user.id,
-  });
+  const { data: availableYears = [currentYear] } = useAvailableYears();
 
   const {
     data: rawTransactions,
     isPending,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: [QUERYKEYS.TRANSACTIONS, activeYear, activeType],
-    queryFn: async () => {
-      const { start, end } = getDateRange(activeYear);
-      let query = supabase
-        .from("transactions")
-        .select("*, categories(*)")
-        .eq("user_id", session?.user.id ?? "")
-        .order("date", { ascending: false })
-        .gte("date", start)
-        .lte("date", end);
-
-      if (activeType !== "all") query = query.eq("type", activeType);
-
-      const { data, error } = await query.throwOnError();
-      if (error) throw error;
-      return data as unknown as TransactionWithCategory[];
-    },
-    enabled: !!session?.user.id,
+  } = useListTransactions({
+    year: currentYear,
+    type: activeType,
   });
 
   const sections = useMemo(() => {
@@ -101,9 +67,13 @@ const Transactions = () => {
   const hasActiveFilters = activeType !== "all" || activeYear !== currentYear;
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F2F2F7]" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: THEME_BACKGROUND }}
+    >
       {/* HEADER */}
-      <View className="px-5 pt-4 pb-4">
+      <View className="px-5 py-3 border-b border-b-neutral-200">
         <View>
           <Text className="text-2xl font-bold tracking-tight text-black">
             Transactions
@@ -117,7 +87,7 @@ const Transactions = () => {
       {/* CONTENT */}
       {isPending ? (
         <View className="items-center justify-center flex-1">
-          <ActivityIndicator size="small" color="#000" />
+          <ActivityIndicator size="small" color={THEME_COLOR} />
         </View>
       ) : isError ? (
         <View className="items-center justify-center flex-1 px-6">
@@ -142,11 +112,13 @@ const Transactions = () => {
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
-          renderItem={renderItem}
+          renderItem={createRenderItem({ showDate: false })}
           renderSectionHeader={renderSectionHeader}
+          renderSectionFooter={() => <View style={{ height: 24 }} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}
           showsVerticalScrollIndicator={true}
           stickySectionHeadersEnabled={false}
+          style={{ paddingTop: 12 }}
         />
       )}
       <TouchableOpacity

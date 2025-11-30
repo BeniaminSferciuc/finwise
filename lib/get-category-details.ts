@@ -16,20 +16,16 @@ import {
   Wallet,
 } from "lucide-react-native";
 
-// Return type
-interface CategoryDetails {
+type CategoryDetails = {
   icon: LucideIcon;
-  background: string; // HEX
-  iconColor: string; // HEX
-}
+  background: string;
+  iconColor: string;
+};
 
 export const getCategoryDetails = (categoryName: string): CategoryDetails => {
   const name = categoryName?.toLowerCase() || "other";
 
   switch (name) {
-    // ===========================
-    //        INCOME
-    // ===========================
     case "salary":
       return { icon: Wallet, background: "#DCFCE7", iconColor: "#16A34A" };
 
@@ -45,9 +41,6 @@ export const getCategoryDetails = (categoryName: string): CategoryDetails => {
     case "other":
       return { icon: CircleHelp, background: "#F3F4F6", iconColor: "#4B5563" };
 
-    // ===========================
-    //        EXPENSE
-    // ===========================
     case "food & drink":
     case "food":
       return { icon: Utensils, background: "#FFEDD5", iconColor: "#F97316" };
@@ -85,9 +78,6 @@ export const getCategoryDetails = (categoryName: string): CategoryDetails => {
     case "donation":
       return { icon: HandHeart, background: "#FFE4E6", iconColor: "#E11D48" };
 
-    // ===========================
-    //      DEFAULT
-    // ===========================
     default:
       return { icon: CircleHelp, background: "#F3F4F6", iconColor: "#9CA3AF" };
   }

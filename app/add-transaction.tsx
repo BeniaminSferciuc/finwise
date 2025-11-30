@@ -1,6 +1,6 @@
 import { SegmentButton, styles } from "@/components/segment-button";
 import { useTransaction } from "@/hooks/use-transaction";
-import { THEME_COLOR } from "@/lib/constants";
+import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
 import { formatDate } from "@/lib/utils";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
@@ -40,7 +40,7 @@ export default function AddTransactions() {
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: "#F9FAFB",
+        backgroundColor: THEME_BACKGROUND,
         paddingBottom: Platform.OS === "ios" ? 0 : 24,
       }}
     >
@@ -52,7 +52,10 @@ export default function AddTransactions() {
         <View className="flex-row items-center justify-between px-4 py-2">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="items-center justify-center w-10 h-10 bg-gray-200 rounded-full"
+            className="items-center justify-center w-10 h-10 bg-neutral-200 rounded-full"
+            style={{
+              opacity: Platform.OS === "ios" ? 0 : 100,
+            }}
           >
             <X size={20} color="#333" />
           </TouchableOpacity>
@@ -84,7 +87,7 @@ export default function AddTransactions() {
 
           {/* 2. AMOUNT INPUT */}
           <View className="items-center justify-center mt-10 mb-8">
-            <Text className="mb-3 text-xs font-bold tracking-widest text-gray-400 uppercase">
+            <Text className="mb-3 text-xs font-bold tracking-widest text-neutral-400 uppercase">
               INTRODU SUMA
             </Text>
             <View className="flex-row items-center justify-center w-full px-6">
@@ -121,9 +124,9 @@ export default function AddTransactions() {
 
           {/* 3. FORM GROUP */}
           <View className="px-4">
-            <View className="overflow-hidden bg-white border border-gray-100 shadow-sm rounded-3xl shadow-gray-100">
+            <View className="overflow-hidden bg-white border border-neutral-100 shadow-sm rounded-3xl shadow-neutral-100">
               {/* DATE ROW */}
-              <View className="border-b border-gray-100">
+              <View className="border-b border-neutral-100">
                 <TouchableOpacity
                   onPress={() => setShowDatePicker(true)}
                   activeOpacity={0.7}
@@ -135,7 +138,7 @@ export default function AddTransactions() {
                   <Text className="flex-1 text-base font-medium text-black">
                     Data
                   </Text>
-                  <View className="px-3 py-1.5 bg-gray-100 rounded-lg">
+                  <View className="px-3 py-1.5 bg-neutral-100 rounded-lg">
                     <Text className="font-semibold text-blue-600">
                       {formatDate(formik.values.date)}
                     </Text>
@@ -157,9 +160,9 @@ export default function AddTransactions() {
                         />
                         <TouchableOpacity
                           onPress={() => setShowDatePicker(false)}
-                          className="px-6 py-2 mt-2 bg-gray-100 rounded-full"
+                          className="px-6 py-2 mt-2 bg-neutral-100 rounded-full"
                         >
-                          <Text className="text-sm font-bold text-gray-900">
+                          <Text className="text-sm font-bold text-neutral-900">
                             Gata
                           </Text>
                         </TouchableOpacity>
@@ -177,7 +180,7 @@ export default function AddTransactions() {
               </View>
 
               {/* CATEGORY ROW */}
-              <View className="p-5 border-b border-gray-100">
+              <View className="p-5 border-b border-neutral-100">
                 <View className="flex-row items-center mb-4">
                   <View className="items-center justify-center w-10 h-10 mr-4 bg-orange-100 rounded-full">
                     <Tag size={20} color="#F97316" />
@@ -211,12 +214,12 @@ export default function AddTransactions() {
                           className={`h-10 px-4 rounded-full mr-2 flex-row items-center justify-center border ${
                             isSelected
                               ? "bg-black border-black"
-                              : "bg-white border-gray-200"
+                              : "bg-white border-neutral-200"
                           }`}
                         >
                           <Text
                             className={`text-sm font-medium ${
-                              isSelected ? "text-white" : "text-gray-700"
+                              isSelected ? "text-white" : "text-neutral-700"
                             }`}
                           >
                             {cat.name}
@@ -248,7 +251,7 @@ export default function AddTransactions() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <View className="px-6 border-gray-100 shadow-none">
+      <View className="px-6 border-neutral-100 shadow-none">
         <TouchableOpacity
           onPress={() => formik.handleSubmit()}
           disabled={!formik.isValid || createTransactionMutation.isPending}

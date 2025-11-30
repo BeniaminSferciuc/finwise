@@ -11,6 +11,8 @@ export type TransactionWithCategory = Transaction & {
 export type User = Database["public"]["Tables"]["user"]["Row"];
 
 export interface TransactionSection {
-  title: string;
+  title?: string;
   data: TransactionWithCategory[];
 }
+
+export type FilterType = "all" | "income" | "expense";

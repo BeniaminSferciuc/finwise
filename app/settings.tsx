@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+import { THEME_BACKGROUND } from "@/lib/constants";
 import { router } from "expo-router";
 import {
   Bell,
@@ -56,7 +57,11 @@ const Settings = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-neutral-100" edges={["top"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: THEME_BACKGROUND }}
+    >
       <View className="flex-row items-center px-5 pt-4">
         <Pressable
           onPress={() => router.back()}
@@ -207,9 +212,9 @@ const SettingRow = ({
     <Container activeOpacity={onPress ? 0.7 : 1} onPress={onPress}>
       <View className="flex-row items-center pl-4 bg-white">
         <View
-          className={`size-[30px] rounded-lg items-center justify-center mr-4 ${iconBg}`}
+          className={`size-[30px] rounded-xl items-center justify-center mr-4 ${iconBg}`}
         >
-          <Icon size={18} color="white" strokeWidth={2} />
+          <Icon size={16} color="white" strokeWidth={2} />
         </View>
         <View
           className={`flex-1 flex-row items-center justify-between pr-4 py-3.5 ${

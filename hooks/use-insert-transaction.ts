@@ -36,7 +36,11 @@ export const useInsertTransaction = (id: string | undefined) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERYKEYS.TRANSACTIONS] });
+      queryClient.invalidateQueries({ queryKey: [QUERYKEYS.TRANSACTIONS, id] });
+      queryClient.invalidateQueries({
+        queryKey: [QUERYKEYS.OVERVIEW_TRANSACTIONS, id],
+      });
+
       if (router.canGoBack()) {
         router.back();
       } else {

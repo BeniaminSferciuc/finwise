@@ -36,23 +36,15 @@ export const useTransaction = () => {
       categoryId: "",
     },
     validationSchema: TransactionSchema,
-    validateOnMount: true, // Validează la pornire pentru a controla butonul de save
+    validateOnMount: true,
     onSubmit: (values) => {
-      createTransactionMutation.mutate(
-        {
-          amount: values.amount,
-          type: values.type,
-          date: values.date,
-          description: values.description,
-          selectedCategoryId: values.categoryId,
-        },
-        {
-          onSuccess: () => {
-            // Optional: Reset form sau navigare
-            // router.back(); (Este gestionat probabil in hook-ul de mutatie)
-          },
-        }
-      );
+      createTransactionMutation.mutate({
+        amount: values.amount,
+        type: values.type,
+        date: values.date,
+        description: values.description,
+        selectedCategoryId: values.categoryId,
+      });
     },
   });
 
@@ -62,8 +54,6 @@ export const useTransaction = () => {
     isLoading: isLoadingCategories,
     isError: isCategoriesError,
   } = useCategories(formik.values.type, session?.user.id);
-
-  // --- Handlers ---
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || formik.values.date;
