@@ -40,13 +40,9 @@ export const FinancialCards = ({ stats }: Props) => {
         style={{
           width: CARD_WIDTH,
           height: 210,
-          borderRadius: 24,
+          borderRadius: 32,
           padding: 24,
           justifyContent: "space-between",
-          shadowColor: "#000",
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 4 },
         }}
       >
         <View>
@@ -96,7 +92,6 @@ export const FinancialCards = ({ stats }: Props) => {
         </View>
       </LinearGradient>
 
-      {/* CARD 2: SAVINGS (Mock logic for now, using calculated ratio) */}
       <LinearGradient
         colors={["#007AFF", "#0055B3"]}
         start={{ x: 0, y: 0 }}
@@ -104,13 +99,9 @@ export const FinancialCards = ({ stats }: Props) => {
         style={{
           width: CARD_WIDTH,
           height: 210,
-          borderRadius: 24,
+          borderRadius: 32,
           padding: 24,
           justifyContent: "space-between",
-          shadowColor: "#000",
-          shadowOpacity: 0.2,
-          shadowRadius: 10,
-          shadowOffset: { width: 0, height: 4 },
         }}
       >
         <View>

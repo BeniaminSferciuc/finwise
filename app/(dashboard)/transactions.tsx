@@ -3,6 +3,7 @@ import { createRenderItem } from "@/components/render-item";
 
 import { renderSectionHeader } from "@/components/render-section-header";
 import { useAvailableYears } from "@/hooks/use-available-years";
+import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { useListTransactions } from "@/hooks/use-list-transactions";
 import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
 import { FilterType } from "@/lib/types";
@@ -48,13 +49,25 @@ const Transactions = () => {
 
   const { data: availableYears = [currentYear] } = useAvailableYears();
 
+  const deleteMutation = useDeleteTransaction();
+
+  const renderItem = useMemo(
+    () =>
+      createRenderItem({
+        showDate: true,
+        onDelete: (id) => deleteMutation.mutate(id),
+        deletingId: deleteMutation.isPending ? deleteMutation.variables : null,
+      }),
+    [deleteMutation]
+  );
+
   const {
     data: rawTransactions,
     isPending,
     isError,
     refetch,
   } = useListTransactions({
-    year: currentYear,
+    year: activeYear,
     type: activeType,
   });
 
@@ -112,7 +125,7 @@ const Transactions = () => {
         <SectionList
           sections={sections}
           keyExtractor={(item) => item.id}
-          renderItem={createRenderItem({ showDate: false })}
+          renderItem={renderItem}
           renderSectionHeader={renderSectionHeader}
           renderSectionFooter={() => <View style={{ height: 24 }} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100 }}

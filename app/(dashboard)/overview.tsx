@@ -1,4 +1,5 @@
 import { ActionButtons } from "@/components/overview/action-buttons";
+import { CategoryBreakdown } from "@/components/overview/category-breakdown";
 import { FinancialCards } from "@/components/overview/financial-cards";
 import { Header } from "@/components/overview/header";
 import { RecentActivity } from "@/components/overview/recent-activity";
@@ -82,7 +83,8 @@ export default function HomeScreen() {
             isLoading={isLoading}
             recentActivity={recentActivity}
           />
-          <SpendingBreakdown stats={stats} />
+          <SpendingBreakdown transactions={transactions} />
+          <CategoryBreakdown data={transactions} />
         </ScrollView>
       </SafeAreaView>
 

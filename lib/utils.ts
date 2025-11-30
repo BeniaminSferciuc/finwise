@@ -61,8 +61,8 @@ export const firstLetterUppercase = (str: string) => {
 };
 
 export const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("ro-RO", {
     style: "currency",
-    currency: "USD",
+    currency: "RON",
   }).format(amount);
 };

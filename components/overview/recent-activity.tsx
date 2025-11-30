@@ -1,6 +1,7 @@
+import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { TransactionWithCategory } from "@/lib/types";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import { Pressable, SectionList, Text, View } from "react-native";
 import { createRenderItem } from "../render-item";
 
@@ -10,6 +11,18 @@ type Props = {
 };
 
 export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
+  const deleteMutation = useDeleteTransaction();
+
+  const renderItem = useMemo(
+    () =>
+      createRenderItem({
+        showDate: true,
+        onDelete: (id) => deleteMutation.mutate(id),
+        deletingId: deleteMutation.isPending ? deleteMutation.variables : null,
+      }),
+    [deleteMutation]
+  );
+
   return (
     <View className="px-6 mt-10">
       <View className="flex-row items-center justify-between mb-4">
@@ -28,7 +41,7 @@ export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
           <SectionList
             keyExtractor={(item) => item.id}
             sections={[{ data: recentActivity }]}
-            renderItem={createRenderItem({ showDate: true })}
+            renderItem={renderItem}
             scrollEnabled={false}
             showsVerticalScrollIndicator={true}
             stickySectionHeadersEnabled={false}
