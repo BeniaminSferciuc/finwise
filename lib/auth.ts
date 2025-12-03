@@ -19,7 +19,7 @@ export const auth = betterAuth({
   trustedOrigins: [
     "finwise://",
     "http://localhost:8081",
-    "exp://172.20.10.3:8081",
+    "exp://192.168.100.168:8081",
   ],
   session: {
     cookieCache: {
