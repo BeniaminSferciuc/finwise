@@ -9,16 +9,16 @@ type Props = {
 };
 
 export const SpendingBreakdown = ({ transactions }: Props) => {
-  const [chartWidth, setChartWidth] = useState(0);
+  const [, setChartWidth] = useState(0);
   const currentYear = new Date().getFullYear();
 
-  // --- PROCESARE DATE PE LUNI (IAN - DEC) ---
+  // Pe Luni
   const { barData, maxValue } = useMemo(() => {
     if (!transactions || transactions.length === 0) {
       return { barData: [], maxValue: 1000 };
     }
 
-    // 1. Inițializăm toate cele 12 luni cu 0
+    // Initializare luni cu 0
     const allMonths = Array.from({ length: 12 }, (_, i) => {
       const d = new Date(currentYear, i, 1);
       return {
@@ -29,7 +29,6 @@ export const SpendingBreakdown = ({ transactions }: Props) => {
       };
     });
 
-    // 2. Agregăm datele din tranzacții
     transactions.forEach((tx) => {
       const date = new Date(tx.date);
       // Luăm în calcul doar anul curent
@@ -45,7 +44,7 @@ export const SpendingBreakdown = ({ transactions }: Props) => {
       }
     });
 
-    // 3. Transformăm pentru Gifted Charts (Grouped Bars)
+    // Transformăm pentru Gifted Charts (Grouped Bars)
     const chartData: any[] = [];
     let max = 0;
 
@@ -65,8 +64,8 @@ export const SpendingBreakdown = ({ transactions }: Props) => {
       // Bara CHELTUIALĂ (Roșu)
       chartData.push({
         value: m.expense,
-        frontColor: "#ef4444", // Red
-        spacing: 24, // Spațiu mare până la următoarea lună
+        frontColor: "#ef4444",
+        spacing: 24,
       });
     });
 
@@ -79,18 +78,18 @@ export const SpendingBreakdown = ({ transactions }: Props) => {
         <Text className="text-lg font-bold text-black">Monthly Overview</Text>
         <View className="flex-row gap-3">
           <View className="flex-row items-center gap-1">
-            <View className="w-2 h-2 rounded-full bg-green-400" />
+            <View className="w-2 h-2 bg-green-400 rounded-full" />
             <Text className="text-xs text-gray-500">Income</Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <View className="w-2 h-2 rounded-full bg-red-400" />
+            <View className="w-2 h-2 bg-red-400 rounded-full" />
             <Text className="text-xs text-gray-500">Expense</Text>
           </View>
         </View>
       </View>
 
       <View
-        className="bg-white rounded-3xl p-5"
+        className="p-5 bg-white rounded-3xl"
         onLayout={(e) => setChartWidth(e.nativeEvent.layout.width)}
       >
         {barData.length > 0 ? (

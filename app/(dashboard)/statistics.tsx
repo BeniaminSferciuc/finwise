@@ -1,36 +1,24 @@
 import React, { useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    ScrollView,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import { useListTransactions } from "@/hooks/use-list-transactions";
-import { THEME_COLOR } from "@/lib/constants";
+import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
 import { FilterType, TransactionWithCategory } from "@/lib/types";
+import { MONTH_LABELS } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type CategorySum = {
   categoryId: string;
   categoryName: string;
   total: number;
 };
-
-const MONTH_LABELS = [
-  "Ian",
-  "Feb",
-  "Mar",
-  "Apr",
-  "Mai",
-  "Iun",
-  "Iul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Noi",
-  "Dec",
-];
 
 const EXPENSE_FILTER: FilterType = "expense";
 
@@ -86,8 +74,7 @@ export default function StatisticsScreen() {
       if (!t.date) return false;
       const d = new Date(t.date as unknown as string);
       return (
-        d.getFullYear() === selectedYear &&
-        d.getMonth() === selectedMonthIndex
+        d.getFullYear() === selectedYear && d.getMonth() === selectedMonthIndex
       );
     });
   }, [safeTransactions, selectedYear, selectedMonthIndex]);
@@ -166,18 +153,18 @@ export default function StatisticsScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F2F2F7]">
-      {/* HEADER */}
-      <View className="pt-12 px-5 pb-4">
-        <Text className="text-xs font-medium tracking-[3px] text-gray-400 uppercase">
-          Overview
-        </Text>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top"]}
+      style={{ backgroundColor: THEME_BACKGROUND }}
+    >
+      <View className="px-6 pb-4">
         <Text className="mt-1 text-2xl font-bold text-black">Statistics</Text>
       </View>
 
       {/* CONȚINUT */}
       {isLoading && (
-        <View className="flex-1 items-center justify-center">
+        <View className="items-center justify-center flex-1">
           <ActivityIndicator />
           <Text className="mt-3 text-xs text-gray-500">
             Se încarcă statisticile tale...
@@ -186,12 +173,12 @@ export default function StatisticsScreen() {
       )}
 
       {!isLoading && error && (
-        <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-2xl mb-2">⚠️</Text>
-          <Text className="text-red-500 text-center font-medium mb-1">
+        <View className="items-center justify-center flex-1 px-6">
+          <Text className="mb-2 text-2xl">⚠️</Text>
+          <Text className="mb-1 font-medium text-center text-red-500">
             Oops, ceva nu a mers bine
           </Text>
-          <Text className="text-xs text-gray-500 text-center">
+          <Text className="text-xs text-center text-gray-500">
             {(error as any)?.message ?? "Eroare la încărcare."}
           </Text>
         </View>
@@ -199,33 +186,30 @@ export default function StatisticsScreen() {
 
       {!isLoading && !error && (
         <ScrollView
-          className="flex-1 px-5"
+          className="flex-1 px-5 pt-6"
           contentContainerStyle={{ paddingBottom: 32 }}
         >
           {/* CARD SELECTOR LUNĂ + TOTAL */}
-          <View className="mb-4 rounded-[28px] bg-white shadow-sm border border-gray-100 px-4 py-4">
+          <View className="p-6 mb-4 bg-white border border-gray-100 rounded-3xl">
             <View className="flex-row items-center justify-between mb-3">
               <TouchableOpacity
                 onPress={() => changeMonth("prev")}
-                className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                className="items-center justify-center bg-gray-100 rounded-full size-9"
               >
-                <Text className="text-lg font-semibold text-gray-700">‹</Text>
+                <ChevronLeft className="mr-0.5" />
               </TouchableOpacity>
 
               <View className="items-center">
-                <Text className="text-[11px] uppercase tracking-[3px] text-gray-400">
-                  Luna selectată
-                </Text>
-                <Text className="text-base font-semibold capitalize text-black">
+                <Text className="text-base font-semibold text-black capitalize">
                   {monthLabel}
                 </Text>
               </View>
 
               <TouchableOpacity
                 onPress={() => changeMonth("next")}
-                className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center"
+                className="items-center justify-center bg-gray-100 rounded-full size-9"
               >
-                <Text className="text-lg font-semibold text-gray-700">›</Text>
+                <ChevronRight className="ml-0.5" />
               </TouchableOpacity>
             </View>
 
@@ -253,7 +237,7 @@ export default function StatisticsScreen() {
             </View>
 
             <View
-              className="mt-4 rounded-2xl px-4 py-3 flex-row items-center justify-between"
+              className="flex-row items-center justify-between px-4 py-3 mt-4 rounded-2xl"
               style={{ backgroundColor: THEME_COLOR }}
             >
               <View>
@@ -272,12 +256,12 @@ export default function StatisticsScreen() {
 
           {/* FĂRĂ DATE */}
           {!hasChartData && (
-            <View className="mt-10 items-center justify-center">
-              <Text className="text-4xl mb-3">🧾</Text>
-              <Text className="text-gray-600 font-medium text-center mb-1">
+            <View className="items-center justify-center mt-10">
+              <Text className="mb-3 text-4xl">🧾</Text>
+              <Text className="mb-1 font-medium text-center text-gray-600">
                 Nu există cheltuieli pentru luna selectată.
               </Text>
-              <Text className="text-xs text-gray-400 text-center px-10">
+              <Text className="px-10 text-xs text-center text-gray-400">
                 Adaugă câteva tranzacții pentru a vedea cum se distribuie
                 cheltuielile tale.
               </Text>
@@ -288,17 +272,17 @@ export default function StatisticsScreen() {
           {hasChartData && (
             <>
               {/* CARD CHART */}
-              <View className="mb-4 rounded-[28px] bg-white shadow-sm border border-gray-100 px-4 py-4">
+              <View className="p-6 mb-4 bg-white border border-gray-100 rounded-3xl">
                 <View className="flex-row items-center justify-between mb-3">
                   <View>
-                    <Text className="text-[11px] uppercase tracking-[3px] text-gray-400">
+                    <Text className="text-xs text-gray-400 uppercase tracking-winder">
                       Distribuție
                     </Text>
                     <Text className="mt-1 text-sm font-semibold text-gray-900">
                       Cheltuieli pe categorii
                     </Text>
                   </View>
-                  <View className="px-3 py-1 rounded-full bg-gray-100">
+                  <View className="px-3 py-1 bg-gray-100 rounded-full">
                     <Text className="text-[11px] text-gray-600 font-medium">
                       {categoryData.length} categorii
                     </Text>
@@ -307,13 +291,10 @@ export default function StatisticsScreen() {
 
                 {/* MINI CHART */}
                 <View className="mt-1">
-                  <View className="flex-row items-end justify-between h-40 border-b border-b-neutral-200 pb-1">
+                  <View className="flex-row items-end justify-between h-40 pb-1 border-b border-b-neutral-200">
                     {categoryData.map((item, index) => {
                       const rawPct = (item.total / maxTotal) * 100;
-                      const heightPct = Math.max(
-                        12,
-                        Math.min(rawPct || 0, 90)
-                      );
+                      const heightPct = Math.max(12, Math.min(rawPct || 0, 90));
                       const color =
                         CATEGORY_COLORS[index % CATEGORY_COLORS.length];
 
@@ -351,10 +332,6 @@ export default function StatisticsScreen() {
                               opacity: isSelected ? 1 : 0.85,
                               borderWidth: isSelected ? 2 : 0,
                               borderColor: isSelected ? "white" : "transparent",
-                              shadowColor: isSelected ? "#000" : "transparent",
-                              shadowOpacity: isSelected ? 0.2 : 0,
-                              shadowOffset: { width: 0, height: 2 },
-                              shadowRadius: isSelected ? 6 : 0,
                             }}
                           />
                         </TouchableOpacity>
@@ -363,7 +340,7 @@ export default function StatisticsScreen() {
                   </View>
 
                   {/* CARD CU SUMA SELECTATĂ */}
-                  <View className="mt-4 px-3 py-2 rounded-2xl bg-gray-50 border border-gray-100">
+                  <View className="p-4 mt-4 border border-gray-100 rounded-2xl bg-gray-50">
                     {selectedCategory ? (
                       <View className="flex-row items-center justify-between">
                         <View>
@@ -394,7 +371,7 @@ export default function StatisticsScreen() {
                       return (
                         <View
                           key={item.categoryId}
-                          className="flex-row items-center mr-4 mb-2"
+                          className="flex-row items-center mb-2 mr-4"
                         >
                           <View
                             className="w-3 h-3 mr-2 rounded-full"
@@ -409,7 +386,7 @@ export default function StatisticsScreen() {
                       );
                     })}
                     {categoryData.length > 6 && (
-                      <Text className="text-xs text-gray-400 mt-1">
+                      <Text className="mt-1 text-xs text-gray-400">
                         +{categoryData.length - 6} categorii
                       </Text>
                     )}
@@ -418,8 +395,8 @@ export default function StatisticsScreen() {
               </View>
 
               {/* CARD LISTĂ CATEGORII */}
-              <View className="mb-4 rounded-[28px] bg-white shadow-sm border border-gray-100 px-4 py-4">
-                <Text className="text-[11px] uppercase tracking-[3px] text-gray-400 mb-1">
+              <View className="p-6 mb-4 bg-white border border-gray-100 rounded-3xl">
+                <Text className="mb-1 text-xs font-semibold tracking-wider text-gray-400 uppercase">
                   Detaliu
                 </Text>
                 <Text className="mb-3 text-sm font-semibold text-gray-900">
@@ -427,8 +404,7 @@ export default function StatisticsScreen() {
                 </Text>
 
                 {categoryData.map((item, index) => {
-                  const color =
-                    CATEGORY_COLORS[index % CATEGORY_COLORS.length];
+                  const color = CATEGORY_COLORS[index % CATEGORY_COLORS.length];
 
                   return (
                     <View
@@ -441,7 +417,7 @@ export default function StatisticsScreen() {
                     >
                       <View className="flex-row items-center">
                         <View
-                          className="w-8 h-8 mr-3 rounded-full items-center justify-center"
+                          className="items-center justify-center w-8 h-8 mr-3 rounded-full"
                           style={{ backgroundColor: `${color}20` }}
                         >
                           <Text className="text-xs font-semibold text-gray-900">
@@ -468,6 +444,6 @@ export default function StatisticsScreen() {
           )}
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   );
 }

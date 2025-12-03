@@ -52,6 +52,13 @@ export default function SignIn() {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "finwise://overview",
+    });
+  };
+
   return (
     <SafeAreaView
       className="flex-1 p-4"
@@ -70,7 +77,6 @@ export default function SignIn() {
             showsVerticalScrollIndicator={false}
             className={`px-6 bg-white rounded-3xl`}
           >
-            {/* --- HEADER SECTION --- */}
             <View className="items-center mb-8">
               <View
                 className="items-center justify-center mb-6 shadow-sm size-16 rounded-[20px]"
@@ -92,7 +98,6 @@ export default function SignIn() {
               </Text>
             </View>
 
-            {/* --- ERROR MESSAGE --- */}
             {error && (
               <View
                 className="flex-row items-center gap-2 p-3 mb-6 border rounded-xl"
@@ -106,9 +111,7 @@ export default function SignIn() {
               </View>
             )}
 
-            {/* --- FORM SECTION --- */}
             <View className="gap-3">
-              {/* EMAIL INPUT */}
               <View
                 className={`flex-row items-center gap-2 px-4 bg-gray-100/80 rounded-2xl ${Platform.OS === "ios" ? "h-14" : "h-[46px]"}`}
               >
@@ -123,7 +126,6 @@ export default function SignIn() {
                 />
               </View>
 
-              {/* PASSWORD INPUT */}
               <View
                 className={`flex-row items-center gap-2 px-4 bg-gray-100/80 rounded-2xl ${Platform.OS === "ios" ? "h-14" : "h-[46px]"}`}
               >
@@ -145,7 +147,6 @@ export default function SignIn() {
                 </TouchableOpacity>
               </View>
 
-              {/* Forgot Password */}
               <TouchableOpacity className="items-end">
                 <Text
                   className="text-sm font-semibold"
@@ -156,9 +157,7 @@ export default function SignIn() {
               </TouchableOpacity>
             </View>
 
-            {/* --- ACTIONS SECTION --- */}
             <View className="gap-4 mt-8">
-              {/* PRIMARY BUTTON (Continue) */}
               <TouchableOpacity
                 onPress={handleLogin}
                 className={cn(
@@ -186,7 +185,6 @@ export default function SignIn() {
               </View>
 
               <View className="gap-3">
-                {/* SECONDARY BUTTON (Create Account) */}
                 <Link href="/sign-up" asChild>
                   <TouchableOpacity
                     className={cn(
@@ -200,14 +198,13 @@ export default function SignIn() {
                   </TouchableOpacity>
                 </Link>
 
-                {/* SOCIAL BUTTONS */}
                 <TouchableOpacity
                   className={cn(
                     "flex-row items-center justify-center bg-gray-100 rounded-full h-14",
                     Platform.OS === "ios" ? "h-14" : "h-[46px]"
                   )}
                 >
-                  <Icon name="apple" size={22} color="black" className="mr-2" />
+                  <Icon name="apple" size={22} color="black" />
                   <Text className="ml-2 text-base font-semibold text-black">
                     Sign in with Apple
                   </Text>
@@ -219,12 +216,11 @@ export default function SignIn() {
                     Platform.OS === "ios" ? "h-14" : "h-[46px]"
                   )}
                 >
-                  {/* Using a generic Google icon representation or Icon lib */}
                   <Icon
                     name="google"
                     size={20}
                     color="black"
-                    className="mr-2"
+                    onPress={handleGoogleLogin}
                   />
                   <Text className="ml-2 text-base font-semibold text-black">
                     Sign in with Google
