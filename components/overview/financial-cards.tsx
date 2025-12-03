@@ -1,10 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  PieChart,
-  TrendingUp,
-} from "lucide-react-native";
+import { ArrowDownRight, ArrowUpRight, PieChart } from "lucide-react-native";
 import { Dimensions, ScrollView, Text, View } from "react-native";
 
 import { THEME_COLOR } from "@/lib/constants";
@@ -50,9 +45,8 @@ export const FinancialCards = ({ stats }: Props) => {
             <Text className="mr-2 font-medium text-gray-400">
               Total Net Worth
             </Text>
-            <View className="bg-green-500/20 px-2 py-0.5 rounded-full flex-row items-center">
-              <TrendingUp size={12} color="#4ade80" />
-              <Text className="ml-1 text-xs font-bold text-green-400">
+            <View className="bg-white/20 px-2 py-0.5 rounded-full flex-row items-center">
+              <Text className="ml-1 text-xs font-bold text-white">
                 Year {new Date().getFullYear()}
               </Text>
             </View>

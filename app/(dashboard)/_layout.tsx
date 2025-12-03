@@ -1,6 +1,6 @@
 import { THEME_COLOR } from "@/lib/constants";
 import { Tabs } from "expo-router";
-import { ArrowLeftRight, LayoutDashboard } from "lucide-react-native";
+import { Gauge, Repeat } from "lucide-react-native";
 import { Platform } from "react-native";
 
 export default function TabLayout() {
@@ -10,17 +10,17 @@ export default function TabLayout() {
         tabBarActiveTintColor: THEME_COLOR,
         tabBarStyle: {
           paddingTop: 5,
-          height: Platform.OS === "ios" ? 85 : 65,
+          height: Platform.OS === "ios" ? 85 : 75,
         },
       }}
     >
       <Tabs.Screen
         name="overview"
         options={{
-          title: "Dashboard",
+          title: "Home",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <LayoutDashboard size={24} color={color} strokeWidth={1.75} />
+            <Gauge size={24} color={color} strokeWidth={1.75} />
           ),
         }}
       />
@@ -31,13 +31,20 @@ export default function TabLayout() {
           title: "Transactions",
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <ArrowLeftRight size={24} color={color} strokeWidth={1.75} />
+            <Repeat size={24} color={color} strokeWidth={1.75} />
           ),
         }}
       />
 
       <Tabs.Screen
         name="add-transaction"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="statistics"
         options={{
           href: null,
           headerShown: false,

@@ -64,7 +64,7 @@ export const CategoryBreakdown = ({ data }: Props) => {
   }, [data, activeTab]);
 
   return (
-    <View className="p-5 mx-4 mb-6 bg-white shadow-sm rounded-3xl shadow-gray-100">
+    <View className="p-5 mx-6 mb-6 bg-white rounded-3xl ">
       <View className="flex-row p-1 mb-8 bg-gray-100 rounded-full">
         <TouchableOpacity
           onPress={() => setActiveTab("income")}
@@ -164,7 +164,7 @@ export const CategoryBreakdown = ({ data }: Props) => {
                       {item.legendText}
                     </Text>
                     <View className="flex-row items-center mt-1">
-                      <View className="h-1 bg-gray-100 rounded-full w-14 mr-2 overflow-hidden">
+                      <View className="h-1 mr-2 overflow-hidden bg-gray-100 rounded-full w-14">
                         <View
                           style={{
                             width: `${item.percentage}%`,

@@ -138,7 +138,7 @@ const Settings = () => {
             icon={CreditCard}
             iconBg="bg-neutral-800"
             label="Currency"
-            value="USD ($)"
+            value="RON"
             onPress={() => console.log("Currency")}
             isLast={true}
           />

@@ -66,3 +66,18 @@ export const formatCurrency = (amount: number) => {
     currency: "RON",
   }).format(amount);
 };
+
+export const MONTH_LABELS = [
+  "Ian",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mai",
+  "Iun",
+  "Iul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Noi",
+  "Dec",
+];

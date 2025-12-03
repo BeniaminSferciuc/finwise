@@ -24,21 +24,19 @@ export default function Index() {
           </TouchableOpacity>
         </View>
 
-        {/* 2. HERO SECTION - APPLE WALLET STYLE */}
         <View className="items-center justify-center flex-1">
           <View className="relative items-center justify-center w-full aspect-square">
-            {/* <View className="absolute w-64 h-64 bg-indigo-500/20 rounded-full blur-[90px]" /> */}
-
-            {/* Back Card (Secondary) */}
             <View
-              className="absolute w-[85%] h-64 bg-gray-800 rounded-[32px] top-4 shadow-sm opacity-90 transform scale-95"
+              className="absolute w-[85%] h-64 bg-orange-600 rounded-[32px] top-4 shadow-sm opacity-90 transform scale-95"
               style={{ transform: [{ translateY: -20 }, { scale: 0.92 }] }}
             />
 
-            {/* Middle Card (Accent) */}
             <View
-              className="absolute w-[90%] h-64 bg-black rounded-[32px] top-6 shadow-md transform scale-95"
-              style={{ transform: [{ translateY: -10 }, { scale: 0.96 }] }}
+              className="absolute w-[90%] h-64 rounded-[32px] top-6 shadow-md transform scale-95"
+              style={{
+                transform: [{ translateY: -10 }, { scale: 0.96 }],
+                backgroundColor: THEME_COLOR,
+              }}
             >
               <View className="justify-between flex-1 p-6 opacity-50">
                 <View className="w-16 h-2 bg-gray-600 rounded-full" />
@@ -75,7 +73,7 @@ export default function Index() {
                 {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
                   <View
                     key={i}
-                    className={`flex-1 rounded-t-lg ${i === 0 ? "ml-0" : "ml-2"} ${i === 5 ? "bg-black" : "bg-gray-100"}`}
+                    className={`flex-1 rounded-t ${i === 0 ? "ml-0" : "ml-2"} ${i === 5 ? `bg-[#003A40]` : "bg-gray-100"}`}
                     style={{ height: `${h}%` }}
                   />
                 ))}
@@ -94,9 +92,12 @@ export default function Index() {
         </View>
 
         <View>
-          <Text className="text-[38px] font-bold text-black leading-tight tracking-tight mb-3">
+          <Text
+            style={{ color: THEME_COLOR }}
+            className="text-[40px] font-bold leading-tight tracking-tight mb-3"
+          >
             Master your{"\n"}
-            finance with <Text style={{ color: THEME_COLOR }}>clarity.</Text>
+            finance with clarity.
           </Text>
 
           <Text className="mb-8 text-lg font-normal leading-7 text-gray-500">
