@@ -1,5 +1,4 @@
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "expo-router";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { Platform } from "react-native";
@@ -19,7 +18,6 @@ const TransactionSchema = Yup.object().shape({
 
 export const useTransaction = () => {
   const { data: session } = authClient.useSession();
-  const router = useRouter();
 
   // State-uri pur UI (care nu țin de datele formularului)
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -65,6 +63,7 @@ export const useTransaction = () => {
 
   const handleTypeChange = (newType: "income" | "expense") => {
     formik.setFieldValue("type", newType);
+
     // Resetăm categoria când schimbăm tipul (pentru că lista de categorii se schimbă)
     formik.setFieldValue("categoryId", "");
   };
@@ -78,7 +77,6 @@ export const useTransaction = () => {
     categories,
     isLoadingCategories,
     isCategoriesError,
-    router,
     createTransactionMutation,
   };
 };

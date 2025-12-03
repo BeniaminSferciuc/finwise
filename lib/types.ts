@@ -16,3 +16,11 @@ export interface TransactionSection {
 }
 
 export type FilterType = "all" | "income" | "expense";
+
+export type FormValues = {
+  amount: string;
+  type: "expense" | "income";
+  date: Date;
+  description: string;
+  categoryId: string;
+};

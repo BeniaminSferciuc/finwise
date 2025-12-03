@@ -15,7 +15,7 @@ export const useListTransactions = ({ year, type }: UseTransactionsProps) => {
   const userId = session?.user.id;
 
   return useQuery({
-    queryKey: [QUERYKEYS.TRANSACTIONS, year, type],
+    queryKey: [QUERYKEYS.TRANSACTIONS, userId, year, type],
     queryFn: async () => {
       const { start, end } = getDateRange(year);
 

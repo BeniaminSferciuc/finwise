@@ -48,11 +48,11 @@ export const getDateRange = (year: number) => {
 export const formatDate = (date: Date) => {
   const today = new Date();
   const isToday = date.toDateString() === today.toDateString();
-  const dateString = date.toLocaleDateString("ro-RO", {
+  const dateString = date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
   });
-  return isToday ? `Azi, ${dateString}` : dateString;
+  return isToday ? `Today, ${dateString}` : dateString;
 };
 
 export const firstLetterUppercase = (str: string) => {

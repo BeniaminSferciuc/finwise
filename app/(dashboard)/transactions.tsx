@@ -1,34 +1,32 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { FilterIcon } from "lucide-react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Pressable, SectionList, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 import { FilterSheet } from "@/components/filters-sheet";
 import { LoadingState } from "@/components/loading";
 import { TransactionItem } from "@/components/render-item";
-
 import { renderSectionHeader } from "@/components/render-section-header";
 import { EmptyState } from "@/components/transactions/empty-state";
 import { ErrorState } from "@/components/transactions/error-state";
 import { TransactionsHeader } from "@/components/transactions/transactions-header";
+
 import { useAvailableYears } from "@/hooks/use-available-years";
 import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { useListTransactions } from "@/hooks/use-list-transactions";
+
 import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
 import { FilterType } from "@/lib/types";
 import { groupTransactionsByDate } from "@/lib/utils";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-
-import { FilterIcon } from "lucide-react-native";
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Pressable, SectionList, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const Transactions = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-
   const currentYear = new Date().getFullYear();
 
-  // Stare Activă (ce se vede in lista)
   const [activeYear, setActiveYear] = useState(currentYear);
   const [activeType, setActiveType] = useState<FilterType>("all");
 
-  // Stare Temporară (ce modifici in modal inainte de Apply)
   const [tempYear, setTempYear] = useState(currentYear);
   const [tempType, setTempType] = useState<FilterType>("all");
 
