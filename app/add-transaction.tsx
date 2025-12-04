@@ -23,14 +23,15 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { CategorySheet } from "@/components/add-transaction/category-sheet"; // Importă componenta nouă
-import { SegmentButton, styles } from "@/components/segment-button";
-
+// Asigură-te că ai aceste componente sau adaptează importurile la structura ta
 import { AddTransactionHeader } from "@/components/add-transaction/add-transaction-header";
 import { AmountInput } from "@/components/add-transaction/amount-input";
+import { CategorySheet } from "@/components/add-transaction/category-sheet";
+import { SegmentButton, styles } from "@/components/segment-button";
+
 import { useTransaction } from "@/hooks/use-transaction";
 import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
-import { getCategoryDetails } from "@/lib/get-category-details"; // Importă helper-ul de detalii
+import { getCategoryDetails } from "@/lib/get-category-details";
 import { formatDate } from "@/lib/utils";
 
 export default function AddTransactions() {
@@ -41,13 +42,15 @@ export default function AddTransactions() {
     setShowDatePicker,
     showDatePicker,
     categories,
-    // isCategoriesError, // Putem ascunde erorile momentan sau le afisam in consola
-    // isLoadingCategories,
-    createTransactionMutation,
+    // Noile return-uri din hook:
+    mutation,
+    isEditing,
+    isLoadingTransaction,
   } = useTransaction();
 
   const categorySheetRef = useRef<BottomSheetModal>(null);
 
+  // Calculăm detaliile categoriei selectate pentru afișare
   const selectedCategoryDetails = useMemo(() => {
     if (!formik.values.categoryId) return null;
     const selectedCat = categories.find(
@@ -71,8 +74,6 @@ export default function AddTransactions() {
         </View>
       );
     }
-
-    // Default Icon
     return (
       <View className="items-center justify-center w-10 h-10 mr-4 bg-orange-100 rounded-full">
         <Tag size={20} color="#F97316" />
@@ -84,6 +85,16 @@ export default function AddTransactions() {
     formik.setFieldValue("categoryId", id);
     categorySheetRef.current?.dismiss();
   };
+
+  // 1. Loading State pentru Editare
+  // Dacă suntem pe edit și datele încă se încarcă, arătăm un spinner
+  if (isLoadingTransaction) {
+    return (
+      <View className="flex-1 items-center justify-center bg-[#F2F2F7]">
+        <ActivityIndicator size="large" color={THEME_COLOR} />
+      </View>
+    );
+  }
 
   return (
     <BottomSheetModalProvider>
@@ -98,14 +109,18 @@ export default function AddTransactions() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{ flex: 1 }}
         >
-          <AddTransactionHeader />
+          {/* 2. Header cu titlu dinamic */}
+          <AddTransactionHeader
+            title={isEditing ? "Edit Transaction" : "New Transaction"}
+          />
+
           <ScrollView
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 40 }}
             style={{ flex: 1, marginTop: 8 }}
             keyboardShouldPersistTaps="handled"
           >
-            {/* 1. SEGMENTED CONTROL */}
+            {/* TYPE SELECTOR */}
             <View style={styles.segmentWrapper}>
               <View style={styles.segmentContainer}>
                 <SegmentButton
@@ -121,13 +136,13 @@ export default function AddTransactions() {
               </View>
             </View>
 
-            {/* 2. AMOUNT INPUT */}
+            {/* AMOUNT INPUT */}
             <AmountInput formik={formik} />
 
-            {/* 3. FORM GROUP */}
+            {/* DETAILS FORM */}
             <View className="px-4">
               <View className="overflow-hidden bg-white border shadow-sm border-neutral-100 rounded-3xl shadow-neutral-100">
-                {/* DATE ROW */}
+                {/* DATE */}
                 <View className="border-b border-neutral-100">
                   <Pressable
                     onPress={() => setShowDatePicker(true)}
@@ -164,7 +179,7 @@ export default function AddTransactions() {
                             className="px-6 py-2 mt-2 rounded-full bg-neutral-100"
                           >
                             <Text className="text-sm font-bold text-neutral-900">
-                              Gata
+                              Done
                             </Text>
                           </Pressable>
                         </>
@@ -180,6 +195,7 @@ export default function AddTransactions() {
                   )}
                 </View>
 
+                {/* CATEGORY */}
                 <View className="border-b border-neutral-100">
                   <Pressable
                     onPress={() => {
@@ -189,13 +205,11 @@ export default function AddTransactions() {
                     className="flex-row items-center p-5"
                   >
                     {renderCategoryIcon()}
-
                     <View className="flex-1">
                       <Text className="text-base font-medium text-black">
                         Category
                       </Text>
                     </View>
-
                     <View className="flex-row items-center">
                       <Text
                         className={`text-base mr-2 ${
@@ -211,7 +225,7 @@ export default function AddTransactions() {
                   </Pressable>
                 </View>
 
-                {/* NOTE ROW */}
+                {/* NOTE */}
                 <View className="flex-row items-center p-5">
                   <View className="items-center justify-center w-10 h-10 mr-4 bg-blue-100 rounded-full">
                     <CreditCard size={20} color="#2563EB" />
@@ -223,7 +237,7 @@ export default function AddTransactions() {
                     className="flex-1 h-10 text-base text-right text-black"
                     placeholder="Add details"
                     placeholderTextColor="#9CA3AF"
-                    value={formik.values.description}
+                    value={formik.values.description || ""}
                     onChangeText={formik.handleChange("description")}
                   />
                 </View>
@@ -232,19 +246,19 @@ export default function AddTransactions() {
           </ScrollView>
         </KeyboardAvoidingView>
 
+        {/* SAVE BUTTON */}
         <View className="px-6 shadow-none border-neutral-100">
           <Pressable
             onPress={() => formik.handleSubmit()}
-            disabled={!formik.isValid || createTransactionMutation.isPending}
+            // 3. Folosim mutation.isPending care e true și la create și la update
+            disabled={!formik.isValid || mutation.isPending}
             style={{
               backgroundColor:
-                !formik.isValid || createTransactionMutation.isPending
-                  ? "#E5E7EB"
-                  : THEME_COLOR,
+                !formik.isValid || mutation.isPending ? "#E5E7EB" : THEME_COLOR,
             }}
             className="flex-row justify-center items-center h-[56px] rounded-full"
           >
-            {createTransactionMutation.isPending ? (
+            {mutation.isPending ? (
               <ActivityIndicator color="white" />
             ) : (
               <Text
@@ -254,13 +268,13 @@ export default function AddTransactions() {
                   color: !formik.isValid ? "#9CA3AF" : "white",
                 }}
               >
-                Save Transaction
+                {/* 4. Text Buton Dinamic */}
+                {isEditing ? "Update Transaction" : "Save Transaction"}
               </Text>
             )}
           </Pressable>
         </View>
 
-        {/* RENDER CATEGORY SHEET */}
         <CategorySheet
           ref={categorySheetRef}
           categories={categories}

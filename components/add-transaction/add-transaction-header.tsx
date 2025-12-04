@@ -2,7 +2,7 @@ import { router } from "expo-router";
 import { X } from "lucide-react-native";
 import { Platform, Pressable, Text, View } from "react-native";
 
-export const AddTransactionHeader = () => {
+export const AddTransactionHeader = ({ title }: { title?: string }) => {
   return (
     <View className="flex-row items-center justify-between px-4 py-2">
       <Pressable
@@ -14,7 +14,7 @@ export const AddTransactionHeader = () => {
       >
         <X size={20} color="#333" />
       </Pressable>
-      <Text className="text-lg font-bold text-black">New Transaction</Text>
+      <Text className="text-lg font-bold text-black">{title}</Text>
       <View style={{ width: 40 }} />
     </View>
   );

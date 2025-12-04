@@ -34,7 +34,7 @@ export const ActionButtons = () => {
       <ActionButton
         icon={MoreHorizontal}
         label="More"
-        color="bg-gray-100"
+        color="bg-gray-200"
         iconColor="#555"
       />
     </View>

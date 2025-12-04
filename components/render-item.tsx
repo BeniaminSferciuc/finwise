@@ -10,7 +10,7 @@ import Reanimated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 
-// RightAction rămâne neschimbat, este corect definit
+// ... (RightAction rămâne neschimbat) ...
 const RightAction = ({
   drag,
   onPress,
@@ -58,14 +58,13 @@ const RightAction = ({
   );
 };
 
-// --- MODIFICAREA PRINCIPALĂ AICI ---
-// Definim tipurile pentru props-urile componentei
 interface TransactionItemProps {
   item: TransactionWithCategory;
   index: number;
   section: TransactionSection;
   showDate?: boolean;
   onDelete?: (id: string) => void;
+  onPress?: (item: TransactionWithCategory) => void; // <--- ADĂUGAT
   deletingId?: string | null;
 }
 
@@ -75,6 +74,7 @@ export const TransactionItem = ({
   section,
   showDate,
   onDelete,
+  onPress, // <--- ADĂUGAT
   deletingId,
 }: TransactionItemProps) => {
   const categoryName = item.categories?.name || "Uncategorized";
@@ -118,6 +118,7 @@ export const TransactionItem = ({
     >
       <TouchableOpacity
         activeOpacity={0.7}
+        onPress={() => onPress?.(item)} // <--- ADĂUGAT LOGICA DE APĂSARE
         className={containerClass}
         style={{
           borderTopStartRadius: isFirst ? 30 : 0,

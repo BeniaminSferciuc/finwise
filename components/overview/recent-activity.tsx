@@ -3,7 +3,6 @@ import { TransactionWithCategory } from "@/lib/types";
 import { router } from "expo-router";
 import React, { useCallback } from "react";
 import { Pressable, SectionList, Text, View } from "react-native";
-// 1. Importăm componenta directă, nu funcția factory
 import { TransactionItem } from "../render-item";
 
 type Props = {
@@ -14,6 +13,14 @@ type Props = {
 export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
   const deleteMutation = useDeleteTransaction();
 
+  // 1. Funcția de navigare către Editare
+  const handleEditTransaction = (item: TransactionWithCategory) => {
+    router.push({
+      pathname: "/add-transaction",
+      params: { id: item.id },
+    });
+  };
+
   const renderItem = useCallback(
     ({ item, index, section }: any) => (
       <TransactionItem
@@ -22,6 +29,8 @@ export const RecentActivity = ({ isLoading, recentActivity }: Props) => {
         section={section}
         showDate={true}
         onDelete={(id) => deleteMutation.mutate(id)}
+        // 2. Pasăm funcția aici
+        onPress={handleEditTransaction}
         deletingId={
           deleteMutation.isPending ? (deleteMutation.variables as string) : null
         }

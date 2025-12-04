@@ -17,8 +17,9 @@ import { useDeleteTransaction } from "@/hooks/use-delete-transaction";
 import { useListTransactions } from "@/hooks/use-list-transactions";
 
 import { THEME_BACKGROUND, THEME_COLOR } from "@/lib/constants";
-import { FilterType } from "@/lib/types";
+import { FilterType, TransactionWithCategory } from "@/lib/types";
 import { groupTransactionsByDate } from "@/lib/utils";
+import { router } from "expo-router";
 
 const Transactions = () => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -57,10 +58,18 @@ const Transactions = () => {
         deletingId={
           deleteMutation.isPending ? (deleteMutation.variables as string) : null
         }
+        onPress={handleEditTransaction}
       />
     ),
     [deleteMutation]
   );
+
+  const handleEditTransaction = (item: TransactionWithCategory) => {
+    router.push({
+      pathname: "/add-transaction",
+      params: { id: item.id }, // Trimitem ID-ul ca parametru
+    });
+  };
 
   const {
     data: rawTransactions,
